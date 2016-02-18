@@ -22,7 +22,7 @@ class WP_Remote_Posts_Item {
 	private static function get_data( $remote_item_id ) {
 		$local_data = array();
 
-		//TODO:   This is where you might grab the item from your XML feed. 
+		//TODO:   This is where you might grab the item from your DB.  I currently have this abstracted out to a seperate class. 
 		$remote_data = WP_Remote_Posts_Data_Api::get_post_data( $remote_item_id );
 		if ( !empty( $remote_data ) ) {
 			$local_data['ID'] = $remote_data['ID'];
