@@ -19,10 +19,17 @@ class WP_Remote_Posts_Templates {
 
 		if ( isset( $wp_query->query_vars['wp_remote_posts_id'] ) && !empty( $wp_query->query_vars['wp_remote_posts_id'] ) ) {
 
+
+
 			if ( $wp_query->query_vars['wp_remote_posts_id'] == 'all' ) {
 				$file = 'archive-remote-post.php';
 			} else {
-				$file = 'single-remote-post.php';
+				$item = WP_Remote_Posts_Item::get_instance( (int) get_query_var( 'wp_remote_posts_id' ) );
+				if ( empty( $item ) ) {
+					$file = 'single-remote-post-404.php';
+				} else {
+					$file = 'single-remote-post.php';
+				}
 			}
 
 			//Look in your theme for single-remote-post.php and wp-remote-posts/single-remote-post.php
@@ -31,7 +38,7 @@ class WP_Remote_Posts_Templates {
 				$template = WP_Remote_Posts::get_plugin_path() . '/templates/' . $file;
 			}
 		}
-		
+
 		return $template;
 	}
 
