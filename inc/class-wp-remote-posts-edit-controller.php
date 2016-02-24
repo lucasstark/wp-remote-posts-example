@@ -39,7 +39,8 @@ class WP_Remote_Posts_Edit_Controller {
 	}
 
 	public function setup_menu() {
-		add_menu_page( $this->_remote_post_type->labels->name, $this->_remote_post_type->labels->name, 'administrator', 'edit-' . $this->_remote_post_type->post_type_name, array($this, 'handle_route') );
+		$slug = add_menu_page( $this->_remote_post_type->labels->name, $this->_remote_post_type->labels->name, 'administrator', 'edit-' . $this->_remote_post_type->post_type_name, array($this, 'handle_route') );
+		add_submenu_page('edit-' . $this->_remote_post_type->post_type_name, $this->_remote_post_type->labels->add_new_item, $this->_remote_post_type->labels->add_new, 'administrator', 'add-new-' . $this->_remote_post_type->post_type_name, array($this, 'handle_route') );
 	}
 
 	public function handle_route() {
@@ -77,57 +78,57 @@ class WP_Remote_Posts_Edit_Controller {
 
 		<div class="wrap">
 			<h1><?php
-				echo esc_html( $this->_remote_post_type->labels->name );
-				if ( current_user_can( $this->_remote_post_type->cap->create_posts ) ) :
-					echo ' <a href="' . esc_url( ( $post_new_file ) ) . '" class="page-title-action">' . esc_html( $this->_remote_post_type->labels->add_new ) . '</a>';
-				endif;
+		echo esc_html( $this->_remote_post_type->labels->name );
+		if ( current_user_can( $this->_remote_post_type->cap->create_posts ) ) :
+			echo ' <a href="' . esc_url( ( $post_new_file ) ) . '" class="page-title-action">' . esc_html( $this->_remote_post_type->labels->add_new ) . '</a>';
+		endif;
 
-				if ( !empty( $_REQUEST['s'] ) ) :
-					printf( ' <span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', get_search_query() );
-				endif;
-				?>
+		if ( !empty( $_REQUEST['s'] ) ) :
+			printf( ' <span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', get_search_query() );
+		endif;
+		?>
 			</h1>
-			<?php $exampleListTable->display(); ?>
+				<?php $exampleListTable->display(); ?>
 		</div>
-		<?php
-	}
-
-	public function handle_create_page() {
-		$post_type_object = false;
-		include 'views/edit/post-new.php';
-	}
-
-	public function handle_edit_page() {
-		$post_type_object = $this->_remote_post_type;
-
-		$post = $this->client->get_item( absint( $_GET['post'] ), 'edit' );
-
-		include 'views/edit/post.php';
-	}
-
-	public function handle_trash() {
-		return;
-	}
-
-	public function handle_delete() {
-		return;
-	}
-
-	public function handle_untrash() {
-		return;
-	}
-
-	public function handle_update_post() {
-		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : -1;
-		if ( false === wp_verify_nonce( $_POST['_wpnonce'], 'update-post_' . $post_id ) ) {
-			wp_die( __( 'Error while saving', 'wp-remote-posts' ) );
+			<?php
 		}
 
-		
-		$this->client->update($post_id, array(
-		    'title' => $_POST['post_title']
-		));
-		
-	}
+		public function handle_create_page() {
+			$post_type_object = false;
+			include 'views/edit/post-new.php';
+		}
 
-}
+		public function handle_edit_page() {
+			$post_type_object = $this->_remote_post_type;
+
+			$post = $this->client->get_item( absint( $_GET['post'] ), 'edit' );
+
+			include 'views/edit/post.php';
+		}
+
+		public function handle_trash() {
+			return;
+		}
+
+		public function handle_delete() {
+			return;
+		}
+
+		public function handle_untrash() {
+			return;
+		}
+
+		public function handle_update_post() {
+			$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : -1;
+			if ( false === wp_verify_nonce( $_POST['_wpnonce'], 'update-post_' . $post_id ) ) {
+				wp_die( __( 'Error while saving', 'wp-remote-posts' ) );
+			}
+
+
+			$this->client->update( $post_id, array(
+			    'title' => $_POST['post_title']
+			) );
+		}
+
+	}
+	
